@@ -1,0 +1,62 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+    <changeSet id="1" author="Patrik Mihalcin">
+        <createTable tableName="PERSON">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR2(100 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="VARCHAR2(100 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="PERSON" columnNames="ID"/>
+
+        <createTable tableName="REVINFO">
+            <column name="REV" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTSTMP" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="REVINFO" columnNames="REV"
+                       constraintName="PK_REVINFO_REV"/>
+        <createSequence sequenceName="HIBERNATE_SEQUENCE" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="PERSON_AUD">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR2(100 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="VARCHAR2(100 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="TINYINT"
+                    remarks="Envers uses the integer values 0, 1 and 2 to store that an entity was added, updated or deleted, see org.hibernate.envers.RevisionType"/>
+        </createTable>
+
+        <addPrimaryKey tableName="PERSON_AUD" columnNames="ID,REV"
+                       constraintName="PK_PERSON_AUD_ID_REV"/>
+
+        <addForeignKeyConstraint baseColumnNames="REV" baseTableName="PERSON_AUD"
+                                 referencedColumnNames="REV" referencedTableName="REVINFO"
+                                 constraintName="FK_REVINFO_PERSON_AUD"/>
+
+        <loadData
+                file="db/changelog/people.csv"
+                tableName="PERSON">
+            <column name="ID" type="NUMERIC"/>
+            <column name="FIRST_NAME" type="STRING"/>
+            <column name="LAST_NAME" type="STRING"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
